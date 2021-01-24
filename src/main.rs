@@ -1,5 +1,7 @@
 mod block;
 mod board;
+mod bounding_rectangle;
+mod direction;
 
 use block::Block;
 use board::Board;
@@ -18,6 +20,6 @@ fn main() {
         Block::new("書道", [3, 4], [1, 1]),
     ];
     let board = Board::new([4, 5], blocks);
-    let boards = vec![board];
+    let boards = board.generate_next_states();
     println!("{:?}", boards);
 }
