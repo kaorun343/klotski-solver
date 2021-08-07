@@ -5,6 +5,7 @@ pub struct Block {
     name: String,
     position: [i64; 2],
     size: [i64; 2],
+    goal: Option<[i64; 2]>,
 }
 
 impl<'a> Into<BoundingRectangle> for &'a Block {
@@ -19,6 +20,16 @@ impl Block {
             name: name.to_owned(),
             position,
             size,
+            goal: None,
+        }
+    }
+
+    pub fn with_goal(name: &str, position: [i64; 2], size: [i64; 2], goal: [i64; 2]) -> Self {
+        Block {
+            name: name.to_owned(),
+            position,
+            size,
+            goal: Some(goal),
         }
     }
 
@@ -27,6 +38,7 @@ impl Block {
             name: self.name.clone(),
             position: self.next_position(direction),
             size: self.size.clone(),
+            goal: self.goal.clone(),
         }
     }
 
@@ -38,6 +50,13 @@ impl Block {
             Top => [x, y - 1],
             Right => [x + 1, y],
             Bottom => [x, y + 1],
+        }
+    }
+
+    pub fn is_at_goal(&self) -> bool {
+        match &self.goal {
+            Some(ref goal) => goal == &self.position,
+            None => true,
         }
     }
 }

@@ -57,4 +57,8 @@ impl Board {
             })
             .collect()
     }
+
+    pub fn is_finished(&self) -> bool {
+        self.blocks.iter().all(Block::is_at_goal)
+    }
 }
