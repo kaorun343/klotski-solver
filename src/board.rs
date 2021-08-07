@@ -1,6 +1,7 @@
 use crate::{block::Block, bounding_rectangle::BoundingRectangle, direction::ALL_DIRECTIONS};
+use std::hash::Hash;
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct Board {
     size: [i64; 2],
     blocks: Vec<Block>,

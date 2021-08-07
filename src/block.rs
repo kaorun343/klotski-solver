@@ -1,6 +1,7 @@
 use crate::{bounding_rectangle::BoundingRectangle, direction::Direction};
+use std::hash::Hash;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct Block {
     name: String,
     position: [i64; 2],
