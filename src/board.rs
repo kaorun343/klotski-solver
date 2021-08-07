@@ -23,37 +23,34 @@ impl Board {
             .iter()
             .enumerate()
             .flat_map(|(block_idx, block)| {
-                let board_rectangle: BoundingRectangle = self.into();
-
                 ALL_DIRECTIONS
                     .iter()
-                    .map(move |direction| block.move_to(direction))
-                    .filter(move |moved_block| {
-                        let moved_block_rectangle: BoundingRectangle = moved_block.into();
-                        moved_block_rectangle.is_inside_of(&board_rectangle)
-                            && blocks
-                                .iter()
-                                .enumerate()
-                                .filter(|&(other_block_idx, _)| other_block_idx != block_idx)
-                                .all(|(_idx, other_block)| {
-                                    moved_block_rectangle.is_far_from(&other_block.into())
-                                })
+                    .cloned()
+                    .map(move |direction| (block_idx, block, direction))
+            })
+            .map(|(block_idx, block, direction)| {
+                let moved_block = block.move_to(&direction);
+                (block_idx, moved_block)
+            })
+            .filter(|(_, moved_block)| {
+                let board_rectangle: BoundingRectangle = self.into();
+                let moved_block_rectangle: BoundingRectangle = moved_block.into();
+                moved_block_rectangle.is_inside_of(&board_rectangle)
+            })
+            .filter(|(block_idx, moved_block)| {
+                let moved_block_rectangle: BoundingRectangle = moved_block.into();
+                blocks
+                    .iter()
+                    .enumerate()
+                    .filter(|&(other_block_idx, _)| other_block_idx != *block_idx)
+                    .all(|(_idx, other_block)| {
+                        moved_block_rectangle.is_far_from(&other_block.into())
                     })
-                    .map(move |moved_block| {
-                        let blocks = blocks
-                            .iter()
-                            .enumerate()
-                            .map(|(idx, other_block)| -> Block {
-                                if idx == block_idx {
-                                    moved_block.clone()
-                                } else {
-                                    other_block.clone()
-                                }
-                            })
-                            .collect();
-
-                        Self::new(self.size.clone(), blocks)
-                    })
+            })
+            .map(move |(block_idx, moved_block)| {
+                let mut blocks = blocks.clone();
+                blocks[block_idx] = moved_block.clone();
+                Self::new(self.size.clone(), blocks)
             })
             .collect()
     }
