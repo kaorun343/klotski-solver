@@ -29,3 +29,44 @@ impl BoundingRectangle {
             || self.top > other.bottom
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_is_inside_of() {
+        let board = BoundingRectangle::new(&[0, 0], &[4, 5]);
+
+        let block = BoundingRectangle::new(&[0, 0], &[1, 2]);
+        assert!(block.is_inside_of(&board));
+
+        let block = BoundingRectangle::new(&[3, 0], &[1, 2]);
+        assert!(block.is_inside_of(&board));
+
+        let block = BoundingRectangle::new(&[3, 0], &[2, 2]);
+        assert!(!block.is_inside_of(&board));
+
+        let block = BoundingRectangle::new(&[1, 4], &[2, 2]);
+        assert!(!block.is_inside_of(&board));
+    }
+
+    #[test]
+    fn test_is_far_from() {
+        let block1 = BoundingRectangle::new(&[0, 0], &[1, 2]);
+        let block2 = BoundingRectangle::new(&[3, 0], &[1, 2]);
+        assert!(block1.is_far_from(&block2));
+
+        let block1 = BoundingRectangle::new(&[0, 0], &[1, 2]);
+        let block2 = BoundingRectangle::new(&[1, 0], &[2, 2]);
+        assert!(block1.is_far_from(&block2));
+
+        let block1 = BoundingRectangle::new(&[1, 0], &[1, 2]);
+        let block2 = BoundingRectangle::new(&[1, 0], &[2, 2]);
+        assert!(!block1.is_far_from(&block2));
+
+        let block1 = BoundingRectangle::new(&[2, 0], &[1, 2]);
+        let block2 = BoundingRectangle::new(&[1, 0], &[2, 2]);
+        assert!(!block1.is_far_from(&block2));
+    }
+}
