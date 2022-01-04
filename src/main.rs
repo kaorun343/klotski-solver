@@ -38,7 +38,8 @@ fn main() {
         } else {
             boards = boards
                 .into_iter()
-                .flat_map(|board| board.generate_next_states(&collection))
+                .flat_map(|board| board.generate_next_states())
+                .filter(|board| collection.get(board).is_none())
                 .collect();
             for board in &boards {
                 collection.insert(board.clone());

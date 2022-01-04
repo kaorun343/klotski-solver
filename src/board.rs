@@ -1,5 +1,5 @@
 use crate::{block::Block, bounding_rectangle::BoundingRectangle, direction::ALL_DIRECTIONS};
-use std::{collections::HashSet, hash::Hash};
+use std::hash::Hash;
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct Board<'a> {
@@ -18,7 +18,7 @@ impl<'a> Board<'a> {
         Board { size, blocks }
     }
 
-    pub fn generate_next_states(&self, collection: &HashSet<Board>) -> Vec<Self> {
+    pub fn generate_next_states(&self) -> Vec<Self> {
         let blocks = &self.blocks;
         blocks
             .iter()
@@ -49,7 +49,6 @@ impl<'a> Board<'a> {
                 blocks[block_idx] = moved_block.clone();
                 Self::new(self.size.clone(), blocks)
             })
-            .filter(|board| collection.get(board).is_none())
             .collect()
     }
 
