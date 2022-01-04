@@ -2,32 +2,37 @@ use crate::{bounding_rectangle::BoundingRectangle, direction::Direction};
 use std::hash::Hash;
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
-pub struct Block {
-    name: String,
+pub struct Block<'a> {
+    name: &'a str,
     position: [i64; 2],
-    size: [i64; 2],
-    goal: Option<[i64; 2]>,
+    size: &'a [i64; 2],
+    goal: Option<&'a [i64; 2]>,
 }
 
-impl<'a> Into<BoundingRectangle> for &'a Block {
+impl<'a> Into<BoundingRectangle> for &'a Block<'a> {
     fn into(self) -> BoundingRectangle {
         BoundingRectangle::new(&self.position, &self.size)
     }
 }
 
-impl Block {
-    pub fn new(name: &str, position: [i64; 2], size: [i64; 2]) -> Self {
+impl<'a> Block<'a> {
+    pub fn new(name: &'a str, position: [i64; 2], size: &'a [i64; 2]) -> Self {
         Block {
-            name: name.to_owned(),
+            name,
             position,
             size,
             goal: None,
         }
     }
 
-    pub fn with_goal(name: &str, position: [i64; 2], size: [i64; 2], goal: [i64; 2]) -> Self {
+    pub fn with_goal(
+        name: &'a str,
+        position: [i64; 2],
+        size: &'a [i64; 2],
+        goal: &'a [i64; 2],
+    ) -> Self {
         Block {
-            name: name.to_owned(),
+            name,
             position,
             size,
             goal: Some(goal),
@@ -38,7 +43,7 @@ impl Block {
         Block {
             name: self.name.clone(),
             position: self.next_position(direction),
-            size: self.size.clone(),
+            size: self.size,
             goal: self.goal.clone(),
         }
     }
@@ -55,8 +60,8 @@ impl Block {
     }
 
     pub fn is_at_goal(&self) -> bool {
-        match &self.goal {
-            Some(ref goal) => goal == &self.position,
+        match self.goal {
+            Some(goal) => goal == &self.position,
             None => true,
         }
     }

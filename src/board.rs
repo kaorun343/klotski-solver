@@ -2,19 +2,19 @@ use crate::{block::Block, bounding_rectangle::BoundingRectangle, direction::ALL_
 use std::{collections::HashSet, hash::Hash};
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
-pub struct Board {
+pub struct Board<'a> {
     size: [i64; 2],
-    blocks: Vec<Block>,
+    blocks: Vec<Block<'a>>,
 }
 
-impl<'a> Into<BoundingRectangle> for &'a Board {
+impl<'a> Into<BoundingRectangle> for &'a Board<'a> {
     fn into(self) -> BoundingRectangle {
         BoundingRectangle::new(&[0, 0], &self.size)
     }
 }
 
-impl Board {
-    pub fn new(size: [i64; 2], blocks: Vec<Block>) -> Self {
+impl<'a> Board<'a> {
+    pub fn new(size: [i64; 2], blocks: Vec<Block<'a>>) -> Self {
         Board { size, blocks }
     }
 
