@@ -5,13 +5,13 @@ use std::hash::Hash;
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct Board<'a> {
-    size: [i64; 2],
+    size: &'a [i64; 2],
     blocks: Vec<Block<'a>>,
 }
 
 impl<'a> Board<'a> {
     #[inline]
-    pub fn new(size: [i64; 2], blocks: Vec<Block<'a>>) -> Self {
+    pub fn new(size: &'a [i64; 2], blocks: Vec<Block<'a>>) -> Self {
         Board { size, blocks }
     }
 
@@ -57,7 +57,7 @@ impl<'a> Board<'a> {
                     .map(move |(block_idx, moved_block)| {
                         let mut blocks = blocks.clone();
                         blocks[block_idx] = moved_block.clone();
-                        Board::new(board.size.clone(), blocks)
+                        Board::new(board.size, blocks)
                     })
             })
             .filter(|board| collection.get(board).is_none())

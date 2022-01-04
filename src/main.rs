@@ -22,7 +22,7 @@ fn main() {
         Block::new("書道", [3, 4], &[1, 1]),
     ];
 
-    let board = Board::new([4, 5], blocks);
+    let board = Board::new(&[4, 5], blocks);
     collection.insert(board.clone());
 
     let mut boards = FnvHashSet::default();
