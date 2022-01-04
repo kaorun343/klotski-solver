@@ -3,10 +3,9 @@ mod board;
 mod bounding_rectangle;
 mod direction;
 
-use std::collections::HashSet;
-
 use block::Block;
 use board::Board;
+use std::collections::HashSet;
 
 fn main() {
     let mut collection = HashSet::new();
