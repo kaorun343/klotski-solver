@@ -27,11 +27,7 @@ impl<'a> Board<'a> {
                 ALL_DIRECTIONS
                     .iter()
                     .cloned()
-                    .map(move |direction| (block_idx, block, direction))
-            })
-            .map(|(block_idx, block, direction)| {
-                let moved_block = block.move_to(&direction);
-                (block_idx, moved_block)
+                    .map(move |direction| (block_idx, block.move_to(&direction)))
             })
             .filter(|(_, moved_block)| {
                 let board_rectangle: BoundingRectangle = self.into();
