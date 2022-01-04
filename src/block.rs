@@ -1,12 +1,20 @@
 use crate::{bounding_rectangle::BoundingRectangle, direction::Direction};
-use std::hash::Hash;
+use std::hash::{Hash, Hasher};
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Block<'a> {
     name: &'a str,
     position: [i64; 2],
     size: &'a [i64; 2],
     goal: Option<&'a [i64; 2]>,
+}
+
+impl<'a> Hash for Block<'a> {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.position.hash(state);
+        self.size.hash(state);
+        self.goal.hash(state);
+    }
 }
 
 impl<'a> Into<BoundingRectangle> for &'a Block<'a> {
