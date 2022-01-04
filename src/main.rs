@@ -5,10 +5,10 @@ mod direction;
 
 use block::Block;
 use board::Board;
-use std::collections::HashSet;
+use fnv::FnvHashSet;
 
 fn main() {
-    let mut collection = HashSet::new();
+    let mut collection = FnvHashSet::default();
     let blocks = vec![
         Block::new("父親", [0, 0], &[1, 2]),
         Block::with_goal("娘", [1, 0], &[2, 2], &[1, 3]),
@@ -25,7 +25,7 @@ fn main() {
     let board = Board::new([4, 5], blocks);
     collection.insert(board.clone());
 
-    let mut boards = HashSet::new();
+    let mut boards = FnvHashSet::default();
     boards.insert(board);
 
     let mut idx = 0u64;

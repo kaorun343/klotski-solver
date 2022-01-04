@@ -24,6 +24,7 @@ impl<'a> Into<BoundingRectangle> for &'a Block<'a> {
 }
 
 impl<'a> Block<'a> {
+    #[inline]
     pub fn new(name: &'a str, position: [i64; 2], size: &'a [i64; 2]) -> Self {
         Block {
             name,
@@ -33,6 +34,7 @@ impl<'a> Block<'a> {
         }
     }
 
+    #[inline]
     pub fn with_goal(
         name: &'a str,
         position: [i64; 2],

@@ -1,5 +1,7 @@
+use fnv::FnvHashSet;
+
 use crate::{block::Block, bounding_rectangle::BoundingRectangle, direction::ALL_DIRECTIONS};
-use std::{collections::HashSet, hash::Hash};
+use std::hash::Hash;
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct Board<'a> {
@@ -16,7 +18,10 @@ impl<'a> Board<'a> {
         self.blocks.iter().all(Block::is_at_goal)
     }
 
-    pub fn run(boards: HashSet<Board<'a>>, collection: &HashSet<Board<'a>>) -> HashSet<Board<'a>> {
+    pub fn run(
+        boards: FnvHashSet<Board<'a>>,
+        collection: &FnvHashSet<Board<'a>>,
+    ) -> FnvHashSet<Board<'a>> {
         boards
             .iter()
             .flat_map(|board| {
