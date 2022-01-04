@@ -49,6 +49,7 @@ impl<'a> Block<'a> {
         }
     }
 
+    #[inline]
     pub fn move_to(&self, direction: &Direction) -> Self {
         Block {
             name: self.name.clone(),
@@ -58,6 +59,7 @@ impl<'a> Block<'a> {
         }
     }
 
+    #[inline]
     fn next_position(&self, direction: &Direction) -> [i64; 2] {
         let &[x, y] = &self.position;
         use Direction::*;
@@ -69,6 +71,7 @@ impl<'a> Block<'a> {
         }
     }
 
+    #[inline]
     pub fn is_at_goal(&self) -> bool {
         match self.goal {
             Some(goal) => goal == &self.position,

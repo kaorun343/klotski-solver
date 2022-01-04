@@ -10,14 +10,17 @@ pub struct Board<'a> {
 }
 
 impl<'a> Board<'a> {
+    #[inline]
     pub fn new(size: [i64; 2], blocks: Vec<Block<'a>>) -> Self {
         Board { size, blocks }
     }
 
+    #[inline]
     pub fn is_finished(&self) -> bool {
         self.blocks.iter().all(Block::is_at_goal)
     }
 
+    #[inline]
     pub fn run(
         boards: FnvHashSet<Board<'a>>,
         collection: &FnvHashSet<Board<'a>>,
