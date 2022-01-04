@@ -34,13 +34,10 @@ fn main() {
     loop {
         if let Some(board) = boards.iter().find(|board| board.is_finished()) {
             println!("{:?}", board);
-            break;
+            return;
         } else {
             boards = Board::run(boards, &collection);
-
-            for board in &boards {
-                collection.insert(board.clone());
-            }
+            collection.extend(boards.iter().cloned());
             idx += 1;
 
             println!(
