@@ -36,11 +36,8 @@ fn main() {
             println!("{:?}", board);
             break;
         } else {
-            boards = boards
-                .into_iter()
-                .flat_map(|board| board.generate_next_states())
-                .filter(|board| collection.get(board).is_none())
-                .collect();
+            boards = Board::run(boards, &collection);
+
             for board in &boards {
                 collection.insert(board.clone());
             }
