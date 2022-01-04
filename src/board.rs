@@ -19,6 +19,7 @@ impl<'a> Board<'a> {
     }
 
     pub fn generate_next_states(&self) -> Vec<Self> {
+        let board_rectangle: BoundingRectangle = self.into();
         let blocks = &self.blocks;
         blocks
             .iter()
@@ -30,7 +31,6 @@ impl<'a> Board<'a> {
                     .map(move |direction| (block_idx, block.move_to(&direction)))
             })
             .filter(|(_, moved_block)| {
-                let board_rectangle: BoundingRectangle = self.into();
                 let moved_block_rectangle: BoundingRectangle = moved_block.into();
                 moved_block_rectangle.is_inside_of(&board_rectangle)
             })
@@ -40,9 +40,7 @@ impl<'a> Board<'a> {
                     .iter()
                     .enumerate()
                     .filter(|&(other_block_idx, _)| other_block_idx != *block_idx)
-                    .all(|(_idx, other_block)| {
-                        moved_block_rectangle.is_far_from(&other_block.into())
-                    })
+                    .all(|(_, other_block)| moved_block_rectangle.is_far_from(&other_block.into()))
             })
             .map(move |(block_idx, moved_block)| {
                 let mut blocks = blocks.clone();
