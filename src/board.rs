@@ -56,10 +56,7 @@ impl<'a> Board<'a> {
     }
 
     #[inline]
-    pub fn run(
-        boards: FnvHashSet<Board<'a>>,
-        collection: &FnvHashSet<Board<'a>>,
-    ) -> FnvHashSet<Board<'a>> {
+    pub fn run(boards: &[Board<'a>], collection: &mut FnvHashSet<Board<'a>>) -> Vec<Board<'a>> {
         boards
             .iter()
             .flat_map(|board| {
@@ -74,7 +71,8 @@ impl<'a> Board<'a> {
                         })
                 })
             })
-            .filter(|board| collection.get(board).is_none())
+            // 未訪問なら collection に登録し、次の探索対象にする(ハッシュ計算は1回)。
+            .filter(|board| collection.insert(board.clone()))
             .collect()
     }
 }

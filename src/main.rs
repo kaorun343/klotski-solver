@@ -25,8 +25,7 @@ fn main() {
     let board = Board::new(&[4, 5], blocks);
     collection.insert(board.clone());
 
-    let mut boards = FnvHashSet::default();
-    boards.insert(board);
+    let mut boards = vec![board];
 
     let mut idx = 0u64;
 
@@ -35,8 +34,7 @@ fn main() {
             println!("{:?}", board);
             return;
         } else {
-            boards = Board::run(boards, &collection);
-            collection.extend(boards.iter().cloned());
+            boards = Board::run(&boards, &mut collection);
             idx += 1;
 
             println!(
