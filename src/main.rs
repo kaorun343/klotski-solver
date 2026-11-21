@@ -17,7 +17,8 @@ fn main() {
         (Small, [2, 3]),      // 茶道
         (Small, [0, 4]),      // 和裁
         (Small, [3, 4]),      // 書道
-    ]);
+    ])
+    .canonical();
 
     let mut collection = FnvHashSet::default();
     collection.insert(board);

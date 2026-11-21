@@ -111,6 +111,22 @@ impl Board {
             .fold(0, |mask, (shape, x, y)| mask | shape.cells(x, y))
     }
 
+    /// 左右を反転した盤面。
+    #[inline]
+    fn mirrored(self) -> Self {
+        Board(self.blocks().fold(0, |bits, (shape, x, y)| {
+            let [w, _] = shape.size();
+            bits | (shape as u64) << shift(WIDTH - w - x, y)
+        }))
+    }
+
+    /// 左右反転した盤面と同一視するための正規形(小さいほう)。
+    /// ゴール位置が左右対称なので、反転しても最短手数は変わらない。
+    #[inline]
+    pub fn canonical(self) -> Self {
+        Board(self.0.min(self.mirrored().0))
+    }
+
     #[inline]
     pub fn is_finished(self) -> bool {
         let [x, y] = GOAL;
@@ -147,7 +163,7 @@ impl Board {
                     visited |= bit;
                     stack[len] = (nx, ny);
                     len += 1;
-                    out.push(Board(base + (code << shift(nx, ny))));
+                    out.push(Board(base + (code << shift(nx, ny))).canonical());
                 }
             }
         }
@@ -203,6 +219,15 @@ mod test {
     }
 
     #[test]
+    fn test_mirrored() {
+        let board = Board::new(&[(Shape::Square, [0, 0]), (Shape::Small, [3, 4])]);
+        let mirrored = Board::new(&[(Shape::Square, [2, 0]), (Shape::Small, [0, 4])]);
+        assert_eq!(board.mirrored(), mirrored);
+        assert_eq!(board.mirrored().mirrored(), board);
+        assert_eq!(board.canonical(), mirrored.canonical());
+    }
+
+    #[test]
     fn test_one_move_slides_any_distance() {
         // ブロックが 1×1 の1個だけなら、元の位置以外の 19 マスすべてに1手で行ける。
         let board = Board::new(&[(Shape::Small, [3, 3])]);
@@ -233,7 +258,10 @@ mod test {
             blocks([2, 1], [2, 2]),
             blocks([3, 1], [2, 2]),
             blocks([2, 0], [2, 1]),
-        ];
+        ]
+        .into_iter()
+        .map(Board::canonical)
+        .collect::<Vec<_>>();
         next.sort_by_key(|board| board.0);
         expected.sort_by_key(|board| board.0);
         assert_eq!(next, expected);
