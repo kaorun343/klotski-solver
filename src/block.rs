@@ -1,13 +1,22 @@
 use crate::{bounding_rectangle::BoundingRectangle, direction::Direction};
 use std::hash::{Hash, Hasher};
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug)]
 pub struct Block<'a> {
     name: &'a str,
     position: [i64; 2],
     size: &'a [i64; 2],
     goal: Option<&'a [i64; 2]>,
 }
+
+// 同じ形のブロックは入れ替えても同じ局面なので、名前は比較に使わない。
+impl<'a> PartialEq for Block<'a> {
+    fn eq(&self, other: &Self) -> bool {
+        self.position == other.position && self.size == other.size && self.goal == other.goal
+    }
+}
+
+impl<'a> Eq for Block<'a> {}
 
 impl<'a> Hash for Block<'a> {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -69,6 +78,12 @@ impl<'a> Block<'a> {
             Right => [x + 1, y],
             Bottom => [x, y + 1],
         }
+    }
+
+    /// 盤面内のブロックの並び順を一意にするためのキー(形, 位置)。
+    #[inline]
+    pub fn sort_key(&self) -> ([i64; 2], [i64; 2]) {
+        (*self.size, self.position)
     }
 
     #[inline]

@@ -11,7 +11,9 @@ pub struct Board<'a> {
 
 impl<'a> Board<'a> {
     #[inline]
-    pub fn new(size: &'a [i64; 2], blocks: Vec<Block<'a>>) -> Self {
+    pub fn new(size: &'a [i64; 2], mut blocks: Vec<Block<'a>>) -> Self {
+        // 同じ形のブロックの入れ替えだけが違う盤面を同一視するため、並び順を正規化する。
+        blocks.sort_unstable_by_key(Block::sort_key);
         Board { size, blocks }
     }
 
