@@ -20,6 +20,41 @@ impl<'a> Board<'a> {
         self.blocks.iter().all(Block::is_at_goal)
     }
 
+    /// ブロック `block_idx` を、ほかのブロックを固定したまま1マスずつ動かして
+    /// たどり着けるすべての位置を返す(元の位置は含まない)。
+    /// 同じブロックを何マス動かしても(曲がっても)1手と数えるため。
+    fn reachable_blocks(&self, block_idx: usize) -> Vec<Block<'a>> {
+        let board_rectangle = BoundingRectangle::new(&[0, 0], self.size);
+        let blocks = &self.blocks;
+
+        let mut visited = vec![blocks[block_idx].clone()];
+        let mut queue = vec![blocks[block_idx].clone()];
+
+        while let Some(block) = queue.pop() {
+            for direction in ALL_DIRECTIONS.iter() {
+                let moved_block = block.move_to(direction);
+                let moved_block_rectangle: BoundingRectangle = (&moved_block).into();
+
+                let is_valid = moved_block_rectangle.is_inside_of(&board_rectangle)
+                    && blocks
+                        .iter()
+                        .enumerate()
+                        .filter(|&(other_block_idx, _)| other_block_idx != block_idx)
+                        .all(|(_, other_block)| {
+                            moved_block_rectangle.is_far_from(&other_block.into())
+                        });
+
+                if is_valid && !visited.contains(&moved_block) {
+                    visited.push(moved_block.clone());
+                    queue.push(moved_block);
+                }
+            }
+        }
+
+        visited.remove(0);
+        visited
+    }
+
     #[inline]
     pub fn run(
         boards: FnvHashSet<Board<'a>>,
@@ -28,37 +63,16 @@ impl<'a> Board<'a> {
         boards
             .iter()
             .flat_map(|board| {
-                let board_rectangle = BoundingRectangle::new(&[0, 0], &board.size);
-                let blocks = &board.blocks;
-
-                blocks
-                    .iter()
-                    .enumerate()
-                    .flat_map(|(block_idx, block)| {
-                        ALL_DIRECTIONS
-                            .iter()
-                            .cloned()
-                            .map(move |direction| (block_idx, block.move_to(&direction)))
-                    })
-                    .filter(move |(_, moved_block)| {
-                        let moved_block_rectangle: BoundingRectangle = moved_block.into();
-                        moved_block_rectangle.is_inside_of(&board_rectangle)
-                    })
-                    .filter(move |(block_idx, moved_block)| {
-                        let moved_block_rectangle: BoundingRectangle = moved_block.into();
-                        blocks
-                            .iter()
-                            .enumerate()
-                            .filter(|&(other_block_idx, _)| other_block_idx != *block_idx)
-                            .all(|(_, other_block)| {
-                                moved_block_rectangle.is_far_from(&other_block.into())
-                            })
-                    })
-                    .map(move |(block_idx, moved_block)| {
-                        let mut blocks = blocks.clone();
-                        blocks[block_idx] = moved_block.clone();
-                        Board::new(board.size, blocks)
-                    })
+                (0..board.blocks.len()).flat_map(move |block_idx| {
+                    board
+                        .reachable_blocks(block_idx)
+                        .into_iter()
+                        .map(move |moved_block| {
+                            let mut blocks = board.blocks.clone();
+                            blocks[block_idx] = moved_block;
+                            Board::new(board.size, blocks)
+                        })
+                })
             })
             .filter(|board| collection.get(board).is_none())
             .collect()
